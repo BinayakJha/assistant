@@ -1,20 +1,22 @@
-import speech_recognition as sr
-import pyttsx3
-import pywhatkit
+import pyttsx3 #pip install pyttsx3
+import speech_recognition as sr #pip install speechRecognition
 import datetime
-import wikipedia
-import pyjokes
+import wikipedia #pip install wikipedia
 import webbrowser
+import os
+import smtplib
 import time
 import sys
 import PyPDF2
 import pyautogui
 import random 
 import requests
+import pywikihow
+from pywikihow import search_wikihow
+# import pywhatkit
 import cv2
 from openpyxl import Workbook
 import wolframalpha
-
 from requests import get
 from pyautogui import hotkey ,typewrite ,click,prompt,password
 from selenium import webdriver
@@ -29,7 +31,9 @@ from email.mime.base import MIMEBase
 from email import encoders
 import pyowm
 from bs4 import BeautifulSoup
-
+from tkinter import *
+from tkinter.ttk import *
+from time import strftime
 admin = smtplib.SMTP('smtp.gmail.com', 587)
 admin.ehlo()
 admin.starttls()
@@ -38,6 +42,7 @@ admin.ehlo()
 listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
+# engine.setProperty('rate', 125)  
 engine.setProperty('voice', voices[0].id)
 volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
 print (volume)                          #printing current volume level
@@ -49,15 +54,14 @@ def talk(text):
 def wishMe():
     hour = int(datetime.datetime.now().hour)
     if hour>=0 and hour<12:
-        talk("Good Morning sir!")
+        talk("Good Morning!")
 
     elif hour>=12 and hour<18:
-        talk("Good Afternoon sir!")   
+        talk("Good Afternoon!")   
 
     else:
-        talk("Good Evening sir!") 
-
-
+        talk("Good Evening!") 
+    talk("I am Jarvis.") 
 def sleep():
     time.sleep(1)
 def sleep2():
@@ -93,7 +97,7 @@ def news():
         talk(f"today's {day[i]} news is: {head[i]}")
 def run_alexa():
     wishMe()
-    greet='What can I do for you?','How can I help you','I am full of energy and ready to help you sir'
+    greet='What can I do for you sir?','How can I help you sir?','I am full of energy and ready to help you sir'
     talk(random.choice(greet))
     while True:
        
@@ -106,10 +110,10 @@ def run_alexa():
             pywhatkit.playonyt(song)
         elif 'voice' in command:
                 engine.setProperty('voice', voices[0].id)
-                talk("Hello I am your alexa ")
+                talk("Hello I am your assistant ")
         elif 'hello' in command:
-            talk('Hi, what can I do for you')
-        #Google Meet
+            talk('Hi sir, what can I do for you')
+        # Google Meet
         elif 'google meet' in command:
             talk('Enter the code of the meeting')
             code = prompt(text="enter the meeting code",title="meetbot")#ask for meeting code
@@ -148,10 +152,10 @@ def run_alexa():
                 # driver.find_element_by_xpath('//*[@id="i3"]').send_keys(code)
                 # driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div[2]/div/div[1]/div[3]/div[2]/div[2]/button').click()
                 time.sleep(10)
-                camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[1]')
+                camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div/div')
                 camera.click()
                 time.sleep(1)
-                mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[2]')
+                mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div/div')
                 mic.click()
                 time.sleep(1)
                 join=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[1]')
@@ -160,7 +164,7 @@ def run_alexa():
                 talk("Joining the meeting")
                 # time.sleep(65)
                 # end = driver.find_element_by_xpath('//*[@id="ow3"]/div[1]/div/div[8]/div[3]/div[3]/div/div[2]/div[2]/div[1]/div[1]/span/div/span[2]')
-                # end2=int(end.text)
+                # # end2=int(end.text)
                 # print(end2)
                 # for i in tqdm(range(z),desc="Minutes Left"):
                 #         a=(str(z-i))
@@ -169,6 +173,7 @@ def run_alexa():
             elif join=="n"or join=="N":
                 talk("Do you want to join the meeting in some minutes or hour?")
                 seconds1=input("Do you want to join the meeting in minutes/hour(m/h)? ")
+                
                 if seconds1=="m"or seconds1=="M":
                     seconds=int(input("In how many minutes you want to join= "))
                     talk("In how many minutes you want to join?")
@@ -205,10 +210,10 @@ def run_alexa():
                     # driver.find_element_by_xpath('//*[@id="i3"]').send_keys(code)
                     # driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div[2]/div/div[1]/div[3]/div[2]/div[2]/button').click()
                     time.sleep(10)
-                    camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[1]')
+                    camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div/div')
                     camera.click()
                     time.sleep(1)
-                    mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[2]')
+                    mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div/div')
                     mic.click()
                     time.sleep(1)
                     join=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[1]')
@@ -258,42 +263,53 @@ def run_alexa():
                     driver.get('https://meet.google.com/'+code)
                     # driver.find_element_by_xpath('//*[@id="i3"]').send_keys(code)
                     # driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div[2]/div/div[1]/div[3]/div[2]/div[2]/button').click()
-                    time.sleep(5)
-                    camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[1]')
+                    time.sleep(10)
+                    camera=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div/div')
                     camera.click()
                     time.sleep(1)
-                    mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div/div[4]/div[2]')
+                    mic=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div/div')
                     mic.click()
                     time.sleep(1)
                     join=driver.find_element_by_xpath('//*[@id="yDmH0d"]/c-wiz/div/div/div[8]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[1]')
                     join.click()
                     print("Joining the meeting")
                     talk("Joining the meeting")
-                    for i in tqdm(range(z),desc="Minutes Left"):
-                        a=(str(z-i))
-                        sleep()
-                    talk('meeting ended')
+                    # for i in tqdm(range(z),desc="Minutes Left"):
+                    #     a=(str(z-i))
+                    #     sleep()
+                    # talk('meeting ended')
                     
                     # driver.find_element_by_xpath('//*[@id="ow3"]/div[1]/div/div[8]/div[3]/div[6]/div[3]/div/div[2]/div[3]/span').click
                     # typewrite('Good Morning')
                     # sleep()
                     # pyautogui.press('enter')
                 # driver.find_element_by_xpath("/html/body/div[1]/c-wiz/div/div/div[6]/div[3]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div/div[1]/div[1]/span/span").click()
-        elif 'close the tabs' in command or 'close the tab' in command:
-           talk('Ok sir closing the tabs')
-           os.system("taskkill /f /im chromedriver.exe")
+        # Closing the tabs (Not working Working on it.)
+        # elif 'close the tabs' in command or 'close the tab' in command:
+        #    talk('Ok sir closing the tabs')
+        #    os.system("taskkill /f /im chromedriver.exe")
         # Youtube
         elif 'youtube' in command:
             print('opening youtube')
             talk('opening youtube')
             webbrowser.open(r'C:\Users\Laptop-16\Desktop\python\youtube.py')
-        #Map
+        #mail
+        elif 'gmail' in command:
+            op2 = command.replace('open','')
+            print('Opening '+op2)
+            talk('Opening '+op2)
+            webbrowser.open_new('https://mail.google.com/mail/u/0/?tab=rm&ogbl')
+        # Map
         elif 'map' in command:
             op = command.replace('open','')
             print('Opening '+op)
             talk('Opening '+op)
             webbrowser.open_new('https://maps.google.com/')
-        #google
+        elif 'messenger' in command:
+            print('opening messenger')
+            talk('opening messenger')
+            webbrowser.open('https://messenger.com')   
+        # Google
         elif 'google' in command:
             print('opening google')
             talk('opening google')
@@ -311,23 +327,23 @@ def run_alexa():
             "profile.default_content_setting_values.notifications": 1
             })
             webbrowser.open(r'C:\Users\Laptop-16\Desktop\python\web.py')
-        # classroom
+        # Classroom
         elif 'classroom' in command:
                 print('opening google classroom')
                 talk('opening google classroom')
                 webbrowser.open('https://classroom.google.com')
-        # search for something
-        elif 'search for' in command:
+        # Search for something
+        elif 'search for' in command or 'search' in command:
             search = command.replace('search for','')
             print('opening '+search)
             talk('Searching sir')
-            pywhatkit.search(search)
-        # time
+            webbrowser.open('https://www.google.com/search?q='+search)
+        # Time
         elif 'time' in command:
             t = datetime.datetime.now().strftime('%I:%M %p')
             print(t)
             talk('Current Time is '+ t)
-        # reminder
+        # Reminder
         elif 'reminder' in command:
             reminder=input("Enter the reminder title = ")
             reminder_time=input("Enter time (HH:MM AM/PM) = ")
@@ -359,37 +375,39 @@ def run_alexa():
                 print("Email has also Been send")
                 admin.quit()
             send()
-        # thank you
+        # Thank you
         elif 'thank you'in command: 
             print('Its my duty sir.')
             talk('Its my duty sir.')      
-        # who made you?
+        # Who made you?
         elif 'who made you' in command:
             print('I am being made by Coding Jha')
             talk('I am being made by Coding Jha')
-        # wikipedia
+        # Wikipedia
         elif 'wikipedia' in command:
             person = command.replace('wekipedia','')
             talk("Searching in wikipedia")
             info = wikipedia.summary(person,2)
             print(info)
             talk(info)
-        # date(not date another one:))
+        # Date(not date another one:))
         elif 'date' in command:
             print('sorry,I have a headache')
             talk('sorry,I have a headache')
-        # are you single
+        # Are you single
         elif 'are you single'in command:
             print('I am in a relationship with wifi')
             talk('I am in a relationship with wifi')
-        # how are you
+        # How are you
         elif 'how are you 'in command:
             print('I am fine.')
             talk('I am fine')
         # Notepad
+        # Open
         elif 'open notepad' in command:
             talk('opening notepad')
             webbrowser.open(r'C:\WINDOWS\system32\notepad.exe')
+        # Close
         elif 'close notepad' in command:
             talk('Ok sir, closing notepad.')
             os.system("taskkill /f /im notepad.exe")
@@ -410,6 +428,7 @@ def run_alexa():
             ip =get('https://api.ipify.org').text 
             print(f'Your IP address is {ip}')
             talk(f'Your IP address is {ip}')
+        # Location
         elif 'location' in command:
             try:
                 url = 'https://get.geojs.io/v1/ip/geo.json'
@@ -421,6 +440,7 @@ def run_alexa():
             except Exception as e:
                 talk("sorry sir, Due to some issue I am not able to find your location")
            # weather
+        # Weather
         elif 'weather' in command:
                 # talk("Enter your city name")
             # city = prompt(text="Enter your city name",title="weather")
@@ -430,7 +450,7 @@ def run_alexa():
             geo_data= geo_requests.json()
             city2 = geo_data['city']
             c = city2
-            talk('weather report of '+c)
+            
             owm = pyowm.OWM(
                 'c27b3cb0e80d123b13b3cf04e962684a')
             loc = owm.weather_at_place(c)
@@ -467,18 +487,14 @@ def run_alexa():
             print('will have clouds? ' + clouds)
             print('will have rain? ' + rain)
             print('------------------------------------------------')
-            
-            print("The weather report says that the temperature outside is ")
-            for key,val in temp.items():
-                print(f'{val}°C')
-                break
-            print(" and the sky being covered by clouds is "+clouds+" and the chance of raining is "+rain)                
-            talk("The weather report says  that the temperature is  ")
-            for key,val in temp.items():
-                talk(f'{val} degree celcius')
-                break
-            talk(" and the sky being covered by clouds is "+clouds+" and the chance of raining is "+rain)         
-        # send email with file
+            search1 = 'temperature'
+            urls=f"https://www.google.com/search?q={search1}"
+            r = requests.get(urls)
+            data = BeautifulSoup(r.text,'html.parser')
+            temp1 = data.find("div",class_="BNeawe").text
+            talk(f'current temperature is {temp1} sir')
+                   
+        # Send email with file
         elif 'send email with file' in command:
             try:
                 talk("What should be the subject ?")
@@ -519,6 +535,7 @@ def run_alexa():
             except Exception as e:
                 print("Sorry sir, email could not be send.")
                 talk("Sorry sir, email could not be send.")
+        # Send email without file
         elif 'send email' in command:
             try:
                 
@@ -547,12 +564,12 @@ def run_alexa():
             except Exception as e:
                 print("Sorry sir, email could not be send.")
                 talk("Sorry sir, email could not be send.")         
-        # make the system sleep, shutdown, restart
+        # Make the system sleep, shutdown, restart
         elif 'sleep the system' in command:
             talk("Ok sir. sleeping the system sir")
             os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
         elif 'shutdown' in command:
-            talk("Ok sir. Computer will shutdown in just 1 minute.So please close all the windows and file")
+            talk("Ok sir. Computer will shutdown in just 10 seconds .So please close all the windows and file")
             time.sleep(5)
             talk("shutting down computer in 5 seconds.")
             time.sleep(5)
@@ -562,7 +579,7 @@ def run_alexa():
             talk("restarting computer in 5 seconds.")
             time.sleep(5)
             os.system("shutdown /r /t 1")
-        # open camera
+        # Open camera
         elif "open camera" in command:
             cap = cv2.VideoCapture(0)
             while True:
@@ -573,24 +590,25 @@ def run_alexa():
                     break;
             cap.release()
             cv2.destroyAllWindows() 
-        # switch the window
+        # Switch the window
         elif 'change the window' in command:
             pyautogui.keyDown("alt")
             pyautogui.press("tab")
             time.sleep(1)
             pyautogui.keyUp("alt")
+        # Swithching the window once more
         elif "change once more" in command:
             pyautogui.keyDown("alt")
             pyautogui.press("tab")
             pyautogui.press("tab")
             time.sleep(1)
             pyautogui.keyUp("alt")
-        # tell the news
+        # Tell the news
         elif 'news' in command:
             talk("Getting the news sir. Please wait")
-            print("Top 10 recent news")
+            print("Top 10 recent news headlines")
             news()
-        # screenshot
+        # Screenshot
         elif 'screenshot' in command:
            talk("sir please tell me the name to save the sceenshot")
            name=prompt(text="Name of the screenshot",title="jarvis")
@@ -600,18 +618,19 @@ def run_alexa():
            image= pyautogui.screenshot()
            image.save(f"C:\\Users\\Laptop-16\\Desktop\\{name}.png")
            talk("screenshot saved in your desktop sir.")
-        # write something
-        elif 'write down something' in command:
+        # Write Something
+        elif 'write' in command:
             talk('What should I write down sir?')
             note = take_command()
             remember = open('data.txt','w')
             remember.write(note)
             remember.close()
             talk('Ok noted sir.')
-        elif'remind me' in command:
+        # Remind Me
+        elif'remind me' in command or 'remember' in command:
             remember = open('data.txt','r').read()
             talk("You told me to remember that "+remember)
-        # notification
+        # Notification
         elif 'notification' in command and 'facebook' in command:
             try:
                 opt=Options()
@@ -631,7 +650,7 @@ def run_alexa():
                 time.sleep(5)
                 driver.find_element_by_xpath('//*[@id="email"]').send_keys('9813257515')
                 time.sleep(2)
-                driver.find_element_by_xpath('//*[@id="pass"]').send_keys('jhabinayak123binayak')
+                driver.find_element_by_xpath('//*[@id="pass"]').send_keys('Binayak123jha')
                 time.sleep(1)
                 driver.find_element_by_xpath('//*[@id="u_0_b"]').click()
                 time.sleep(5)
@@ -644,7 +663,9 @@ def run_alexa():
             except Exception as e:
                 print("You do not have any notification sir")
                 talk("You do not have any notification sir")
-        #make an HTML document
+        elif 'close' in command or 'exit' in command:
+            driver.quit()
+        # Make an HTML document
         elif 'html' in command:
             talk("ok sir what should be the name of html file?")
             filen=take_command()
@@ -667,7 +688,7 @@ def run_alexa():
             ff.close()
             talk("opening the output file sir")
             webbrowser.open_new(f'C:\\Users\\Laptop-16\\Desktop\\{filen}.html')
-        #make an excel-file
+        # Make an excel-file
         elif "excel" in command:
             talk("What should be the name of the exel file?")
             ex1=take_command()
@@ -678,7 +699,7 @@ def run_alexa():
             wb.save(f"C:\\Users\\Laptop-16\\Desktop\\{ex1}.xlsx")
             ans=take_command()
             talk("You can find the file in desktop")
-        #make an ms-word extension=.docx
+        # Make an ms-word extension=.docx
         elif 'word' in command:
             talk("ok sir making a word file")
             talk("what should be the name?")
@@ -687,12 +708,12 @@ def run_alexa():
             ff2 = open(f'C:\\Users\\Laptop-16\\Desktop\\{filen2}.docx','w')#os.O_RDWR
             talk("Opening the file sir")
             webbrowser.open(f"C:\\Users\\Laptop-16\\Desktop\\{filen2}.docx")
-        #minimise the window
+        # Minimise the window
         elif 'minimise' in command:
             pyautogui.keyDown('winleft')
             pyautogui.press('m')
             pyautogui.keyUp('winleft')
-        # ask
+        # Ask
         elif "ask" in command:
             talk("Ok sir. You can ask any question related to any subject sir.")
             try:
@@ -724,12 +745,77 @@ def run_alexa():
                     print()
             except Exception as e:
                 talk("Sorry sir. Could not find the answer.")
-        # go to sleep
+        # Jarvis Clock 
+        elif 'open' in command and'clock' in command:
+            talk('Ok opening my clock sir')
+            webbrowser.open('new.py')
+        # how to
+        elif 'how to' in command:
+            how = command
+            max_results = 1
+            how_to = search_wikihow(how, max_results)
+            assert len(how_to) == 1
+            how_to[0].print()
+            talk(how_to[0].summary)        
+        # Go To Sleep
         elif  'go to sleep' in command or 'sleep now'in command:
             talk('Ok sir. You can wake me up whenever you want.')
             break
+        elif 'scroll down' in command:
+            pyautogui.press('down',presses=10) 
+            talk('done sir')
+        elif 'scroll up' in command:
+            pyautogui.press('up',presses=10) 
+            talk('done sir')
+        # Battery Percentage
+        elif 'how much battery is left' in command or 'battery' in command:
+            import psutil
+            battery = psutil.sensors_battery()
+            percentage = battery.percent
+            talk(f"sir our system  have {percentage} percent battery")
+            if percentage>80:
+                talk("We have enough power to continue work sir.")
+            elif percentage >=40 and percentage<=80:
+                talk("We should connect our system to charging point")
+            else:
+                talk("Battery is low to continue work please connect it to charging point")
+        # movie description
+        elif 'movie description' in command:
+            import imdb
+
+            pq = imdb.IMDb()
+            print('Please tell the movie name')
+            talk('Please tell the movie name')
+            movie_name = take_command()
+            movies = pq.search_movie(str(movie_name))
+
+            index = movies[0].getID()
+            movie = pq.get_movie(index)
+
+            title = movie['title']
+            year = movie['year']
+            cast = movie['cast']
+            list_of_cast=','.join(map(str,cast))
+            print('TITLE: ',title)
+            print('--------------------------------------------------------------------')
+            print("YEAR OF RELEASE : ",year)
+            print('--------------------------------------------------------------------')
+            print("FULL CASTS : ",list_of_cast)
+            print('--------------------------------------------------------------------')
+            talk('Here is the movie details sir')
+        # Qrcode maker
+        elif 'qr code' in command or 'qrcode' in command:
+            import pyqrcode
+            from pyqrcode import QRCode
+            talk("Ok sir please enter the url")
+            s = prompt(text="Url",title="Jarvis QRCODE maker")
+            url = pyqrcode.create(s)
+            url.svg("C:\\Users\\Laptop-16\\Desktop\\qrcode.svg",scale=10)
+            webbrowser.open_new('C:\\Users\\Laptop-16\\Desktop\\qrcode.svg')
+            talk("Here you go sir QRcode Created")
+        # Else Statement
         else:
-            talk("Sorry sir I didn't understand what you said. Please try again.")    
+            talk('please repeat it')
 if __name__=='__main__':
     while True:
         permission = take_command()
@@ -739,6 +825,9 @@ if __name__=='__main__':
             sys.exit()
         elif 'wake up' in permission:
             run_alexa()
+
+
+# More Function Adding Soon:
 # youtube
 # //*[@id="notification-count"]
 #meet
